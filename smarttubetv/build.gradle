@@ -164,7 +164,7 @@ android {
             targetSdkVersion project.properties.compileSdkVersion
         }
         ststable {
-            applicationId "org.smarttube.stable"
+            applicationId "org.smarttube.tom" // fork: installs alongside upstream SmartTube
             targetSdkVersion project.properties.compileSdkVersion
         }
         stfdroid {

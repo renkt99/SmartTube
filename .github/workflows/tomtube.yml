@@ -1,0 +1,67 @@
+name: Build TomTube
+
+# TomTube = our fork of SmartTube (package org.smarttube.tom, installs next to
+# upstream SmartTube). Builds the signed release APK for the living-room TV
+# (armeabi-v7a) on every push to the tom branch. Install with adb install -r.
+
+on:
+  push:
+    branches: [ "tom" ]
+  workflow_dispatch:
+
+concurrency:
+  group: tomtube-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          submodules: recursive
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Version name
+        id: ver
+        run: |
+          sed -i "s/versionName \"\(.*\)\"/versionName \"\1-tom-${{ github.run_number }}\"/" smarttubetv/build.gradle
+          echo "name=$(grep versionName smarttubetv/build.gradle | head -n1 | awk -F'"' '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Signing
+        env:
+          KEYSTORE_B64: ${{ secrets.TOMTUBE_KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.TOMTUBE_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then echo "::error::TOMTUBE_KEYSTORE_B64 secret missing"; exit 1; fi
+          echo "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/tomtube.p12"
+          {
+            echo "storeFile=$RUNNER_TEMP/tomtube.p12"
+            echo "storePassword=$KEYSTORE_PASSWORD"
+            echo "keyAlias=tomtube"
+            echo "keyPassword=$KEYSTORE_PASSWORD"
+          } > keystore.properties
+
+      - name: Build
+        run: chmod +x gradlew && ./gradlew assembleStstableRelease
+
+      - name: Upload armeabi-v7a APK (living-room TV)
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: TomTube_${{ steps.ver.outputs.name }}_armeabi-v7a
+          path: ./smarttubetv/build/outputs/apk/ststable/release/*_armeabi-v7a.apk
+          if-no-files-found: error
+
+      - name: Upload arm64 APK
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: TomTube_${{ steps.ver.outputs.name }}_arm64
+          path: ./smarttubetv/build/outputs/apk/ststable/release/*_arm64-v8a.apk
+          if-no-files-found: error
