@@ -1525,6 +1525,11 @@ public class BrowseSupportFragment extends BaseSupportFragment {
         }
     };
 
+    /** uToob fork: open a row's page now (sidebar rows open on OK, not on highlight). */
+    protected void selectRowNow(int position) {
+        onRowSelected(position);
+    }
+
     /** uToob fork: return false for header rows that act as buttons (highlighting them keeps the current page). */
     protected boolean isHeaderSelectable(Row row) {
         return true;

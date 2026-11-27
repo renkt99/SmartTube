@@ -120,8 +120,8 @@ public class BrowseFragment extends BrowseSupportFragment implements BrowseView 
     /** uToob fork: the person and Search rows are buttons; highlighting them keeps the current page. */
     @Override
     protected boolean isHeaderSelectable(androidx.leanback.widget.Row row) {
-        return row == null || row.getHeaderItem() == null
-                || !com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.isButton(row.getHeaderItem().getId());
+        // uToob fork: no row opens on highlight (like Streamezy); OK opens it (see the header click listener)
+        return !com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext());
     }
 
     @Override
@@ -143,6 +143,18 @@ public class BrowseFragment extends BrowseSupportFragment implements BrowseView 
                     }
                     int newPosition = indexOf(headerId);
 
+                    if (com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext())) {
+                        // uToob fork: highlighting a row does nothing, OK opens its page and moves into it
+                        if (getSelectedPosition() != newPosition) {
+                            mFocusOnContent = true;
+                            selectRowNow(newPosition);
+                        } else {
+                            mBrowsePresenter.onSectionFocused((int) headerId);
+                            startHeadersTransitionSafe(false);
+                        }
+                        return;
+                    }
+
                     if (getHeadersSupportFragment().getSelectedPosition() != newPosition) {
                         // touch screen support
                         getHeadersSupportFragment().setSelectedPosition(newPosition);
@@ -162,7 +174,9 @@ public class BrowseFragment extends BrowseSupportFragment implements BrowseView 
                 }
         );
 
-        setOnSearchClickedListener(view -> SearchPresenter.instance(getContext()).startSearch(null));
+        if (!com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext())) { // uToob fork: Search is a sidebar row, no title search button
+            setOnSearchClickedListener(view -> SearchPresenter.instance(getContext()).startSearch(null));
+        }
     }
 
     private void setupFragmentFactory() {

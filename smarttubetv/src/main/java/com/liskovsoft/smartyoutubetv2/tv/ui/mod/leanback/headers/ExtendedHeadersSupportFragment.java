@@ -32,7 +32,10 @@ public class ExtendedHeadersSupportFragment extends HeadersSupportFragment {
         super.onViewCreated(view, savedInstanceState);
         // uToob fork: sidebar spaced like Streamezy's (person top, middle centred, Settings bottom)
         if (com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext()) && getVerticalGridView() != null) {
-            new com.liskovsoft.smartyoutubetv2.tv.ui.profiles.RailSpacing(getVerticalGridView());
+            androidx.leanback.widget.VerticalGridView grid = getVerticalGridView();
+            float d = getResources().getDisplayMetrics().density;
+            grid.setPadding((int) (18 * d), (int) (54 * d), grid.getPaddingRight(), (int) (44 * d));
+            new com.liskovsoft.smartyoutubetv2.tv.ui.profiles.RailSpacing(grid);
         }
     }
 

@@ -320,6 +320,14 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
         boolean utoob = com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext());
         BrowseSection utoobSettings = null;
         if (utoob) {
+            // Open on Subscriptions (once per person; they can still pick another start page in Settings)
+            android.content.SharedPreferences flags = getContext().getSharedPreferences("utoob_flags", android.content.Context.MODE_PRIVATE);
+            if (!flags.getBoolean("bootSubscriptions", false)) {
+                getSidebarService().setBootSectionId(MediaGroup.TYPE_SUBSCRIPTIONS);
+                flags.edit().putBoolean("bootSubscriptions", true).apply();
+            }
+            bootSectionId = getSidebarService().getBootSectionId();
+            mBootSectionIndex = -1;
             String name = com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.personName;
             getView().addSection(index++, new BrowseSection(com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.PERSON_ID,
                     name != null ? name : "Who's watching", BrowseSection.TYPE_GRID, R.drawable.settings_account,
@@ -352,6 +360,9 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
                 mBootSectionIndex = index;
             }
             getView().addSection(index++, utoobSettings);
+        }
+        if (utoob && mBootSectionIndex < 2) {
+            mBootSectionIndex = Math.min(2, index - 1); // start page hidden or missing: first real page, not the person row
         }
 
         // Refresh and restore last focus

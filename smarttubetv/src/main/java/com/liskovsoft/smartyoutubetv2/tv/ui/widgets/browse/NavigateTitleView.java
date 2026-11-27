@@ -152,7 +152,7 @@ public class NavigateTitleView extends TitleView implements OnDataChange, Accoun
         mBrandingVisibility = (flags & BRANDING_VIEW_VISIBLE) == BRANDING_VIEW_VISIBLE
                 ? View.VISIBLE : View.INVISIBLE;
 
-        if (mIsSearchOrbEnabled) {
+        if (mIsSearchOrbEnabled || Profiles.enabled(getContext())) { // uToob fork: Search lives in the sidebar
             mSearchOrbView.setVisibility(View.GONE);
         }
 
@@ -242,12 +242,12 @@ public class NavigateTitleView extends TitleView implements OnDataChange, Accoun
 
         // uToob fork: the person and Search are the top rows of the sidebar (like Streamezy), so no orbs for them up here
         boolean utoob = Profiles.enabled(getContext());
-        mIsSearchOrbEnabled = !utoob && !mainUIData.isTopButtonEnabled(MainUIData.TOP_BUTTON_SEARCH);
+        mIsSearchOrbEnabled = !mainUIData.isTopButtonEnabled(MainUIData.TOP_BUTTON_SEARCH);
         mIsAccountViewEnabled = !utoob && mainUIData.isTopButtonEnabled(MainUIData.TOP_BUTTON_BROWSE_ACCOUNTS);
         mIsLanguageViewEnabled = mainUIData.isTopButtonEnabled(MainUIData.TOP_BUTTON_CHANGE_LANGUAGE);
         mIsGlobalClockEnabled = GeneralData.instance(getContext()).isGlobalClockEnabled();
 
-        mSearchOrbView.setVisibility(mIsSearchOrbEnabled ? View.VISIBLE : View.GONE);
+        mSearchOrbView.setVisibility(mIsSearchOrbEnabled && !utoob ? View.VISIBLE : View.GONE);
         mAccountView.setVisibility(mIsAccountViewEnabled ? View.VISIBLE : View.GONE);
         mLanguageView.setVisibility(mIsLanguageViewEnabled ? View.VISIBLE : View.GONE);
         mGlobalClock.setVisibility(mIsGlobalClockEnabled ? View.VISIBLE : View.GONE);
