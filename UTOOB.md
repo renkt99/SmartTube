@@ -20,3 +20,6 @@ Branch `tom` = upstream `master` + our changes. `master` mirrors upstream.
 - Sidebar: rows sit closer to the top/bottom (padding 18/14dp), a highlighted row grows rightwards and isn't clipped, the open page's
   name is red (`BrowseSupportFragment.onCurrentRowChanged` -> `ExtendedHeadersSupportFragment.setCurrentRow`).
 - Video grid pages use `UtoobGridCardPresenter`: 3 big cards across, one-line title, "Channel · date" under it (no views).
+- Closed sidebar = 66dp icon rail (labels hidden): leanback `BrowseSupportFragment.getCollapsedHeadersWidth/onHeadersShown`,
+  `HeadersSupportFragment.setRowsVisibleWhenDisabled`. Open page's name + icon use the theme's progress-bar red (logo red #E62117 fallback).
+- Video grids: 32dp gaps, focus zoom 106% (XSMALL), cards sized for the rail.

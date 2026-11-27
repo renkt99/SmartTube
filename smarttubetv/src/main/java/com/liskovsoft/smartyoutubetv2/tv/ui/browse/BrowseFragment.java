@@ -124,6 +124,20 @@ public class BrowseFragment extends BrowseSupportFragment implements BrowseView 
         return !com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext());
     }
 
+    /** uToob fork: a closed sidebar stays on screen as a rail of icons, like Streamezy's. */
+    @Override
+    protected int getCollapsedHeadersWidth() {
+        return com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext())
+                ? com.liskovsoft.smartyoutubetv2.tv.ui.mod.leanback.headers.ExtendedHeadersSupportFragment.railWidthPx(getContext()) : 0;
+    }
+
+    @Override
+    protected void onHeadersShown(boolean show) {
+        if (getHeadersSupportFragment() instanceof ExtendedHeadersSupportFragment) {
+            ((ExtendedHeadersSupportFragment) getHeadersSupportFragment()).setCollapsed(!show);
+        }
+    }
+
     /** uToob fork: the sidebar shows the open page's name in red. */
     @Override
     protected void onCurrentRowChanged(int position) {

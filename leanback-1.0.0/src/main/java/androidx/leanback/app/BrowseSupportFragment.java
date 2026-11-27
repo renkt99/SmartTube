@@ -1446,13 +1446,32 @@ public class BrowseSupportFragment extends BaseSupportFragment {
         }
     }
 
+    private int mHeadersFullWidth;
+
+    /** uToob fork: width of the icon rail the sidebar narrows to when closed; 0 = slide it off screen (leanback's way). */
+    protected int getCollapsedHeadersWidth() {
+        return 0;
+    }
+
+    /** uToob fork: called when the sidebar opens (true) or closes (false), entrance transitions included. */
+    protected void onHeadersShown(boolean show) {
+    }
+
     private void setHeadersOnScreen(boolean onScreen) {
         MarginLayoutParams lp;
         View containerList;
         containerList = mHeadersSupportFragment.getView();
         lp = (MarginLayoutParams) containerList.getLayoutParams();
-        lp.setMarginStart(onScreen ? 0 : -mContainerListMarginStart);
+        int rail = getCollapsedHeadersWidth();
+        if (rail > 0) {
+            if (mHeadersFullWidth == 0) mHeadersFullWidth = lp.width;
+            lp.setMarginStart(0);
+            lp.width = onScreen ? mHeadersFullWidth : rail;
+        } else {
+            lp.setMarginStart(onScreen ? 0 : -mContainerListMarginStart);
+        }
         containerList.setLayoutParams(lp);
+        onHeadersShown(onScreen);
     }
 
     void showHeaders(boolean show) {
@@ -1464,7 +1483,7 @@ public class BrowseSupportFragment extends BaseSupportFragment {
 
     private void expandMainFragment(boolean expand) {
         MarginLayoutParams params = (MarginLayoutParams) mScaleFrameLayout.getLayoutParams();
-        params.setMarginStart(!expand ? mContainerListMarginStart : 0);
+        params.setMarginStart(!expand ? mContainerListMarginStart : getCollapsedHeadersWidth());
         mScaleFrameLayout.setLayoutParams(params);
         mMainFragmentAdapter.setExpand(expand);
 

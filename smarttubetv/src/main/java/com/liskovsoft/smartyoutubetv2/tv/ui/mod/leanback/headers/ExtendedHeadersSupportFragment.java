@@ -59,11 +59,49 @@ public class ExtendedHeadersSupportFragment extends HeadersSupportFragment {
                 }
             });
             grid.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> recolorRows());
+            setRowsVisibleWhenDisabled(true);
         }
     }
 
-    /** uToob fork: the page that is open now has its name in red (the row may be highlighted or not). */
-    private static final int CURRENT_PAGE_COLOR = 0xFFFF4D5E;
+    /** uToob fork: closed sidebar = icon rail. Left padding 18dp + 32dp icon + 16dp. */
+    public static int railWidthPx(android.content.Context ctx) {
+        return (int) (66 * ctx.getResources().getDisplayMetrics().density);
+    }
+
+    private boolean mCollapsed;
+
+    /** Closed: only the icons show (labels hidden), in the rail BrowseSupportFragment narrows the sidebar to. */
+    public void setCollapsed(boolean collapsed) {
+        mCollapsed = collapsed;
+        recolorRows();
+    }
+
+    /** uToob fork: the page that is open now has its name and icon in red (the row may be highlighted or not). */
+    private static final int LOGO_RED = 0xFFE62117;
+    private int mCurrentPageColor;
+
+    /** The red of the theme's progress bars (which matches the logo); the logo's own red if it can't be read. */
+    private int currentPageColor() {
+        if (mCurrentPageColor != 0) return mCurrentPageColor;
+        mCurrentPageColor = LOGO_RED;
+        try {
+            android.util.TypedValue tv = new android.util.TypedValue();
+            if (getContext().getTheme().resolveAttribute(com.liskovsoft.smartyoutubetv2.tv.R.attr.cardProgressStyle, tv, true)) {
+                android.content.res.TypedArray a = getContext().obtainStyledAttributes(tv.resourceId, new int[]{android.R.attr.progressDrawable});
+                android.graphics.drawable.Drawable d = a.getDrawable(0);
+                a.recycle();
+                if (d instanceof android.graphics.drawable.LayerDrawable && android.os.Build.VERSION.SDK_INT >= 24) {
+                    android.graphics.drawable.Drawable p = ((android.graphics.drawable.LayerDrawable) d).findDrawableByLayerId(android.R.id.progress);
+                    if (p instanceof android.graphics.drawable.ClipDrawable) p = ((android.graphics.drawable.ClipDrawable) p).getDrawable();
+                    if (p instanceof android.graphics.drawable.GradientDrawable && ((android.graphics.drawable.GradientDrawable) p).getColor() != null) {
+                        mCurrentPageColor = ((android.graphics.drawable.GradientDrawable) p).getColor().getDefaultColor();
+                    }
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        return mCurrentPageColor;
+    }
     private int mCurrentRow = -1;
 
     public void setCurrentRow(int position) {
@@ -86,7 +124,13 @@ public class ExtendedHeadersSupportFragment extends HeadersSupportFragment {
             label.setTag(com.liskovsoft.smartyoutubetv2.tv.R.id.header_label, normal);
         }
         boolean current = mCurrentRow >= 0 && grid.getChildAdapterPosition(row) == mCurrentRow;
-        label.setTextColor(current ? CURRENT_PAGE_COLOR : (Integer) normal);
+        label.setTextColor(current ? currentPageColor() : (Integer) normal);
+        label.setVisibility(mCollapsed ? View.INVISIBLE : View.VISIBLE);
+        android.widget.ImageView icon = row.findViewById(com.liskovsoft.smartyoutubetv2.tv.R.id.header_icon);
+        if (icon != null && grid.getChildAdapterPosition(row) != 0) {          // row 0 = the person's own picture
+            if (current) icon.setColorFilter(currentPageColor(), android.graphics.PorterDuff.Mode.SRC_IN);
+            else icon.clearColorFilter();
+        }
     }
 
     @Override

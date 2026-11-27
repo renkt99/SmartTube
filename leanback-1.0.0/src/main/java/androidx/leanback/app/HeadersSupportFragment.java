@@ -83,6 +83,7 @@ public class HeadersSupportFragment extends BaseRowSupportFragment {
     OnHeaderClickedListener mOnHeaderClickedListener;
     private boolean mHeadersEnabled = true;
     private boolean mHeadersGone = false;
+    private boolean mRowsVisibleWhenDisabled = false;   // uToob fork: closed sidebar still shows its icons
     private int mBackgroundColor;
     private boolean mBackgroundColorSet;
 
@@ -186,7 +187,7 @@ public class HeadersSupportFragment extends BaseRowSupportFragment {
         if (listView != null) {
             getView().setVisibility(mHeadersGone ? View.GONE : View.VISIBLE);
             if (!mHeadersGone) {
-                if (mHeadersEnabled) {
+                if (mHeadersEnabled || mRowsVisibleWhenDisabled) {
                     listView.setChildrenVisibility(View.VISIBLE);
                 } else {
                     listView.setChildrenVisibility(View.INVISIBLE);
@@ -197,6 +198,12 @@ public class HeadersSupportFragment extends BaseRowSupportFragment {
 
     void setHeadersEnabled(boolean enabled) {
         mHeadersEnabled = enabled;
+        updateListViewVisibility();
+    }
+
+    /** uToob fork: keep the rows drawn while the sidebar is closed (it narrows to an icon rail instead of hiding). */
+    protected void setRowsVisibleWhenDisabled(boolean visible) {
+        mRowsVisibleWhenDisabled = visible;
         updateListViewVisibility();
     }
 

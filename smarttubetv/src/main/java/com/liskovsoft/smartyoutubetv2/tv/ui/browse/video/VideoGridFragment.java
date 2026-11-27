@@ -94,7 +94,7 @@ public class VideoGridFragment extends GridFragment implements VideoSection {
     }
 
     private void setupAdapter() {
-        VerticalGridPresenter presenter = new CustomVerticalGridPresenter();
+        VerticalGridPresenter presenter = utoob() ? com.liskovsoft.smartyoutubetv2.tv.presenter.UtoobGridCardPresenter.gridPresenter() : new CustomVerticalGridPresenter();
         presenter.setNumberOfColumns(utoob() ? com.liskovsoft.smartyoutubetv2.tv.presenter.UtoobGridCardPresenter.COLUMNS : // uToob fork: 3 big cards
                 GridFragmentHelper.getMaxColsNum(getContext(), isShorts() ? R.dimen.shorts_card_width : R.dimen.card_width, mVideoGridScale)
         );

@@ -21,6 +21,23 @@ import java.util.List;
  */
 public class UtoobGridCardPresenter extends VideoCardPresenter {
     public static final int COLUMNS = 3;
+    /** Gap between cards: a focused card grows 6% (as on Rocket's Home) and still has room around it. */
+    public static final int GAP_DP = 32;
+
+    /** The grid for these cards: smaller focus zoom than SmartTube's, wider gaps both ways. */
+    public static androidx.leanback.widget.VerticalGridPresenter gridPresenter() {
+        return new androidx.leanback.widget.VerticalGridPresenter(androidx.leanback.widget.FocusHighlight.ZOOM_FACTOR_XSMALL,
+                com.liskovsoft.smartyoutubetv2.tv.util.ViewUtil.FOCUS_DIMMER_ENABLED) {
+            @Override
+            protected androidx.leanback.widget.VerticalGridPresenter.ViewHolder createGridViewHolder(android.view.ViewGroup parent) {
+                androidx.leanback.widget.VerticalGridPresenter.ViewHolder vh = super.createGridViewHolder(parent);
+                int gap = (int) (GAP_DP * parent.getResources().getDisplayMetrics().density);
+                vh.getGridView().setHorizontalSpacing(gap);
+                vh.getGridView().setVerticalSpacing(gap);
+                return vh;
+            }
+        };
+    }
 
     /** Card size that makes exactly COLUMNS cards fill the grid's width (same sums as GridFragmentHelper). */
     @Override
@@ -29,8 +46,10 @@ public class UtoobGridCardPresenter extends VideoCardPresenter {
         DisplayMetrics dm = res.getDisplayMetrics();
         int displayWidthPx = Math.max(dm.widthPixels, dm.heightPixels);
         float uiScale = MainUIData.instance(context).getUIScale();
-        float spacing = res.getDimensionPixelSize(R.dimen.grid_item_horizontal_spacing);
-        float available = displayWidthPx - displayWidthPx * 0.1f * uiScale;
+        float spacing = GAP_DP * dm.density;
+        // the closed sidebar's icon rail takes the left edge
+        float available = displayWidthPx - displayWidthPx * 0.1f * uiScale
+                - com.liskovsoft.smartyoutubetv2.tv.ui.mod.leanback.headers.ExtendedHeadersSupportFragment.railWidthPx(context);
         float width = available / COLUMNS - spacing;
         float baseW = res.getDimensionPixelSize(R.dimen.card_width);
         float baseH = res.getDimensionPixelSize(R.dimen.card_height);
