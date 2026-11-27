@@ -1,6 +1,6 @@
-name: Build TomTube
+name: Build uTube
 
-# TomTube = our fork of SmartTube (package org.smarttube.tom, installs next to
+# uTube = our fork of SmartTube (package org.smarttube.utube, installs next to
 # upstream SmartTube). Builds the signed release APK for the living-room TV
 # (armeabi-v7a) on every push to the tom branch. Install with adb install -r.
 
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: tomtube-${{ github.ref }}
+  group: utube-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -32,15 +32,15 @@ jobs:
       - name: Version name
         id: ver
         run: |
-          sed -i "s/versionName \"\(.*\)\"/versionName \"\1-tom-${{ github.run_number }}\"/" smarttubetv/build.gradle
+          sed -i "s/versionName \"\(.*\)\"/versionName \"\1-utube-${{ github.run_number }}\"/" smarttubetv/build.gradle
           echo "name=$(grep versionName smarttubetv/build.gradle | head -n1 | awk -F'"' '{print $2}')" >> "$GITHUB_OUTPUT"
 
       - name: Signing
         env:
-          KEYSTORE_B64: ${{ secrets.TOMTUBE_KEYSTORE_B64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.TOMTUBE_KEYSTORE_PASSWORD }}
+          KEYSTORE_B64: ${{ secrets.UTUBE_KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.UTUBE_KEYSTORE_PASSWORD }}
         run: |
-          if [ -z "$KEYSTORE_B64" ]; then echo "::error::TOMTUBE_KEYSTORE_B64 secret missing"; exit 1; fi
+          if [ -z "$KEYSTORE_B64" ]; then echo "::error::UTUBE_KEYSTORE_B64 secret missing"; exit 1; fi
           echo "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/tomtube.p12"
           {
             echo "storeFile=$RUNNER_TEMP/tomtube.p12"
@@ -55,13 +55,13 @@ jobs:
       - name: Upload armeabi-v7a APK (living-room TV)
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: TomTube_${{ steps.ver.outputs.name }}_armeabi-v7a
+          name: uTube_${{ steps.ver.outputs.name }}_armeabi-v7a
           path: ./smarttubetv/build/outputs/apk/ststable/release/*_armeabi-v7a.apk
           if-no-files-found: error
 
       - name: Upload arm64 APK
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: TomTube_${{ steps.ver.outputs.name }}_arm64
+          name: uTube_${{ steps.ver.outputs.name }}_arm64
           path: ./smarttubetv/build/outputs/apk/ststable/release/*_arm64-v8a.apk
           if-no-files-found: error
