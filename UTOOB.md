@@ -14,3 +14,6 @@ Branch `tom` = upstream `master` + our changes. `master` mirrors upstream.
   changing it makes Android treat it as a different app (settings and people lost).
 - Watched videos (90%+ through, `Video.isWatched()`) are greyed out on cards (`VideoCardPresenter.utoobGreyOutIfWatched`).
   Long-press menu always has "Mark as watched", or "Mark as unwatched" on a watched video (forced on in `MainUIData`).
+- Rocket Launcher's "uToob subscriptions" Home row: on every screen pause uToob saves the person's subscribed channels and watch
+  progress to files/utube_profiles/share/<person>.json (`UtoobShare`); `UtoobShareProvider` (`${applicationId}.share`, own
+  `:share` process where MainApplication starts nothing, answers com.tomrenk.rocket only) hands them over. Rocket fetches the RSS itself.

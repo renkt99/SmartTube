@@ -194,6 +194,9 @@ public final class Profiles {
 
             @Override
             public void onActivityPaused(Activity a) {
+                // Rocket Launcher's "uToob subscriptions" row reads this (UtoobShareProvider); saved before Home is back.
+                if (a instanceof WhoActivity) return;
+                com.liskovsoft.smartyoutubetv2.common.misc.UtoobShare.snapshot(a, safe(currentId(a)));
             }
 
             @Override
@@ -327,12 +330,16 @@ public final class Profiles {
         f.delete();
     }
 
-    /** True in the short-lived :switch process, where MainApplication must not start SmartTube's own machinery. */
+    /**
+     * True in our short-lived helper processes (:switch swaps people, :share answers Rocket Launcher), where MainApplication
+     * must not start SmartTube's own machinery.
+     */
     public static boolean isSwitchProcess() {
         try (FileInputStream in = new FileInputStream("/proc/self/cmdline")) {
             byte[] b = new byte[256];
             int n = in.read(b);
-            return n > 0 && new String(b, 0, n, StandardCharsets.UTF_8).trim().endsWith(":switch");
+            String name = n > 0 ? new String(b, 0, n, StandardCharsets.UTF_8).trim() : "";
+            return name.endsWith(":switch") || name.endsWith(":share");
         } catch (Throwable e) {
             return false;
         }

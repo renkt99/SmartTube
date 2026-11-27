@@ -89,6 +89,12 @@
             android:name="com.liskovsoft.smartyoutubetv2.tv.ui.profiles.WhoActivity"
             android:exported="false"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" />
+        <!-- uToob fork: subscribed channels + watched progress for Rocket Launcher's Home row (read-only, Rocket only) -->
+        <provider
+            android:name="com.liskovsoft.smartyoutubetv2.tv.ui.profiles.UtoobShareProvider"
+            android:authorities="${applicationId}.share"
+            android:exported="true"
+            android:process=":share" />
         <activity
             android:name="com.liskovsoft.smartyoutubetv2.tv.ui.profiles.SwitchActivity"
             android:exported="false"
