@@ -110,7 +110,7 @@ public class VideoCardPresenter extends LongClickPresenter {
         android.graphics.drawable.GradientDrawable ring = new android.graphics.drawable.GradientDrawable();
         ring.setColor(android.graphics.Color.TRANSPARENT);
         ring.setStroke((int) (3 * d + 0.5f), android.graphics.Color.WHITE);
-        ring.setCornerRadius(8 * d);
+        ring.setCornerRadius(UtoobGridCardPresenter.RADIUS_DP * d);   // same curve as the rounded thumbnail
         return ring;
     }
 

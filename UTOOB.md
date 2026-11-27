@@ -25,3 +25,4 @@ Branch `tom` = upstream `master` + our changes. `master` mirrors upstream.
 - Video grids: 32dp gaps, focus zoom 106% (XSMALL), cards sized for the rail.
 - Grid cards focus like Rocket: white ring round the thumbnail only, no text panel (`VideoCardPresenter.useRingFocus`). Watched cards
   (all pages): darker (0.35), a "Watched" pill in the middle, no progress bar. Icon rail 76dp (centred, measured on the TV).
+- Grid cards: rounded thumbnails (10dp, ring follows), title/channel 4dp apart, no text scrolling, bigger (grid side padding 30dp, gaps 26dp).
