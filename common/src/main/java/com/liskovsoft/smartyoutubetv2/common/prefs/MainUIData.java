@@ -441,6 +441,7 @@ public class MainUIData extends DataChangeBase implements ProfileChangeListener 
         mIsUploadsAutoLoadEnabled = Helpers.parseBoolean(split, 10, true);
         mCardTextScrollSpeed = Helpers.parseFloat(split, 11, 2);
         mMenuItems = Helpers.parseLong(split, 12, MENU_ITEM_DEFAULT);
+        mMenuItems |= MENU_ITEM_MARK_AS_WATCHED; // uToob: long-press "Mark as watched/unwatched" is always on
         mTopButtons = Helpers.parseInt(split, 13, TOP_BUTTON_DEFAULT);
         // 14
         mThumbQuality = Helpers.parseInt(split, 15, ClickbaitRemover.THUMB_QUALITY_DEFAULT);

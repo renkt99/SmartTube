@@ -3,6 +3,8 @@ package com.liskovsoft.smartyoutubetv2.tv.presenter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.util.Pair;
@@ -137,6 +139,7 @@ public class VideoCardPresenter extends LongClickPresenter {
         );
         cardView.setBadgeColor(video.hasNewContent || video.isLive || video.isUpcoming ?
                 ContextCompat.getColor(context, R.color.dark_red) : ContextCompat.getColor(context, R.color.black));
+        utoobGreyOutIfWatched(cardView, video.isWatched());
 
         if (mCardPreviewType != MainUIData.CARD_PREVIEW_DISABLED) {
             cardView.setPreview(video);
@@ -171,6 +174,37 @@ public class VideoCardPresenter extends LongClickPresenter {
                         .error(R.drawable.card_placeholder) // R.color.lb_grey
                 )
                 .into(cardView.getMainImageView());
+    }
+
+    /**
+     * uToob: watched videos get a dim black-and-white thumbnail and faded text.
+     * Cards are recycled, so always set both states.
+     */
+    private static ColorMatrixColorFilter sWatchedFilter;
+
+    private static void utoobGreyOutIfWatched(ComplexImageCardView cardView, boolean watched) {
+        if (watched && sWatchedFilter == null) {
+            ColorMatrix matrix = new ColorMatrix();
+            matrix.setSaturation(0);
+            ColorMatrix dim = new ColorMatrix();
+            dim.setScale(0.5f, 0.5f, 0.5f, 1f);
+            matrix.postConcat(dim);
+            sWatchedFilter = new ColorMatrixColorFilter(matrix);
+        }
+
+        if (cardView.getMainImageView() != null) {
+            cardView.getMainImageView().setColorFilter(watched ? sWatchedFilter : null);
+        }
+
+        float textAlpha = watched ? 0.5f : 1f;
+        View titleText = cardView.findViewById(R.id.title_text);
+        if (titleText != null) {
+            titleText.setAlpha(textAlpha);
+        }
+        View contentText = cardView.findViewById(R.id.content_text);
+        if (contentText != null) {
+            contentText.setAlpha(textAlpha);
+        }
     }
 
     @Override

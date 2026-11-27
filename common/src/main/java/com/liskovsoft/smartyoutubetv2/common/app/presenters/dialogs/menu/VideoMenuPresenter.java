@@ -23,6 +23,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.presenters.BrowsePresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.ChannelPresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.ChannelUploadsPresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
+import com.liskovsoft.smartyoutubetv2.common.app.presenters.SearchPresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.dialogs.menu.providers.ContextMenuManager;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.dialogs.menu.providers.ContextMenuProvider;
 import com.liskovsoft.smartyoutubetv2.common.app.views.ChannelUploadsView;
@@ -574,14 +575,37 @@ public class VideoMenuPresenter extends BaseMenuPresenter {
             return;
         }
 
+        // uToob: toggles. Watched cards are greyed out (VideoCardPresenter), so refresh the card straight away.
+        if (mVideo.isWatched()) {
+            mDialogPresenter.appendSingleButton(
+                    UiOptionItem.from("Mark as unwatched", optionItem -> {
+                        MediaServiceManager.instance().updateHistory(mVideo, 0);
+                        mVideo.markNotViewed();
+                        VideoStateService.instance(getContext()).save(new State(mVideo, 0));
+                        Playlist.instance().sync(mVideo);
+                        utoobRefreshCard();
+                        mDialogPresenter.closeDialog();
+                    }));
+            return;
+        }
+
         mDialogPresenter.appendSingleButton(
                 UiOptionItem.from(getContext().getString(R.string.mark_as_watched), optionItem -> {
                     MediaServiceManager.instance().updateHistory(mVideo, mVideo.getDurationMs());
                     mVideo.markFullyViewed();
                     VideoStateService.instance(getContext()).save(new State(mVideo, mVideo.getDurationMs()));
                     Playlist.instance().sync(mVideo);
+                    utoobRefreshCard();
                     mDialogPresenter.closeDialog();
                 }));
+    }
+
+    private void utoobRefreshCard() {
+        Video video = mVideo;
+        BrowsePresenter.instance(getContext()).syncItem(video);
+        ChannelPresenter.instance(getContext()).syncItem(video);
+        ChannelUploadsPresenter.instance(getContext()).syncItem(video);
+        SearchPresenter.instance(getContext()).syncItem(video);
     }
 
     private void appendShareLinkButton() {

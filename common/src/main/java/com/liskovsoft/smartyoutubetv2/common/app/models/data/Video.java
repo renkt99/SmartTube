@@ -882,6 +882,15 @@ public final class Video {
         return nextVideo;
     }
 
+    /**
+     * uToob: 90%+ through counts as watched (card is greyed out, menu offers "Mark as unwatched").
+     */
+    public static final float WATCHED_PERCENT = 90;
+
+    public boolean isWatched() {
+        return percentWatched >= WATCHED_PERCENT;
+    }
+
     public void markFullyViewed() {
         percentWatched = 100;
         startTimeSeconds = (int)(getDurationMs() / 1_000);
