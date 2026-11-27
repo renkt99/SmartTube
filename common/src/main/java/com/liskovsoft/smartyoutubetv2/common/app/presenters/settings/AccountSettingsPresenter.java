@@ -65,6 +65,18 @@ public class AccountSettingsPresenter extends BasePresenter<Void> {
     private void createAndShowDialog(List<Account> accounts, List<Drawable> icons) {
         AppDialogPresenter settingsPresenter = AppDialogPresenter.instance(getContext());
 
+        if (getContext().getPackageName().endsWith(".utube")) {
+            // uToob fork: people (Who's watching) replace multiple accounts. One YouTube sign-in per person.
+            if (accounts == null || accounts.isEmpty()) {
+                appendSignInButton(settingsPresenter);
+            } else {
+                appendSignOutSection(accounts, icons, settingsPresenter);
+            }
+            Account signedIn = getSignInService().getSelectedAccount();
+            settingsPresenter.showDialog(signedIn != null ? "YouTube sign-in: " + signedIn.getName() : "YouTube sign-in", this::unhold);
+            return;
+        }
+
         appendSelectAccountSection(accounts, icons, settingsPresenter);
         appendSignInButton(settingsPresenter);
         appendSignOutSection(accounts, icons, settingsPresenter);

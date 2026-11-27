@@ -124,6 +124,9 @@ public class SplashPresenter extends BasePresenter<SplashView> {
     }
 
     private void showAccountSelectionIfNeeded() {
+        if (getContext().getPackageName().endsWith(".utube")) {
+            return; // uToob fork: people replace accounts
+        }
         AccountSelectionPresenter.instance(getContext()).show();
     }
 

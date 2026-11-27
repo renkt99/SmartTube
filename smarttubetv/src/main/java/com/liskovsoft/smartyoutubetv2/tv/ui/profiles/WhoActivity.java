@@ -148,6 +148,25 @@ public class WhoActivity extends Activity {
         return v;
     }
 
+    /** The person's round picture as a bitmap (for the top-left button on the browse screen). */
+    public static android.graphics.Bitmap avatarBitmap(Profiles.Person p, int px) {
+        Object[] a = AVATARS.get(p.avatar);
+        android.graphics.Bitmap bmp = android.graphics.Bitmap.createBitmap(px, px, android.graphics.Bitmap.Config.ARGB_8888);
+        android.graphics.Canvas c = new android.graphics.Canvas(bmp);
+        android.graphics.Paint bg = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+        bg.setShader(new android.graphics.LinearGradient(0, 0, px, px,
+                a != null ? (int) a[1] : 0xFF5F3DC4, a != null ? (int) a[2] : 0xFF1971C2, android.graphics.Shader.TileMode.CLAMP));
+        c.drawCircle(px / 2f, px / 2f, px / 2f, bg);
+        android.graphics.Paint t = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+        t.setColor(Color.WHITE);
+        t.setTextAlign(android.graphics.Paint.Align.CENTER);
+        t.setTextSize(px * (a != null ? 0.5f : 0.38f));
+        if (a == null) t.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        android.graphics.Paint.FontMetrics fm = t.getFontMetrics();
+        c.drawText(a != null ? (String) a[0] : initials(p.name), px / 2f, px / 2f - (fm.ascent + fm.descent) / 2f, t);
+        return bmp;
+    }
+
     private static String initials(String name) {
         StringBuilder b = new StringBuilder();
         for (String w : name.trim().split("\\s+")) {

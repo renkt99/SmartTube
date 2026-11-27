@@ -174,7 +174,7 @@ public abstract class BaseMenuPresenter extends BasePresenter<Void> {
     }
 
     protected void appendAccountSelectionButton() {
-        if (!mIsAccountSelectionEnabled) {
+        if (!mIsAccountSelectionEnabled || getContext().getPackageName().endsWith(".utube")) { // uToob fork: people replace accounts
             return;
         }
 

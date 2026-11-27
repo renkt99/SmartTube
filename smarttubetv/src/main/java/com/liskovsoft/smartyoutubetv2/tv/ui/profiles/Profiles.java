@@ -146,6 +146,19 @@ public final class Profiles {
         return state(ctx).optString("current");
     }
 
+    /** True for our fork (people, Who's watching button); upstream flavors keep SmartTube's own behaviour. */
+    public static boolean enabled(Context ctx) {
+        return ctx.getPackageName().endsWith(".utube");
+    }
+
+    /** The person using uToob now (null when Rocket isn't there or nobody is set yet). */
+    public static Person currentPerson(Context ctx) {
+        RocketInfo info = readRocket(ctx);
+        if (info == null) return null;
+        Person p = info.find(currentId(ctx));
+        return p != null ? p : info.find(info.current);
+    }
+
     // ------------------------------------------------------------------ when uToob comes to the front
 
     /** Called from MainApplication (main process only). */

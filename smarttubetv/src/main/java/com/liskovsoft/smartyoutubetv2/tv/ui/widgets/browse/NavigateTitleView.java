@@ -1,5 +1,9 @@
 package com.liskovsoft.smartyoutubetv2.tv.ui.widgets.browse;
 
+import com.liskovsoft.smartyoutubetv2.tv.ui.profiles.Profiles;
+import com.liskovsoft.smartyoutubetv2.tv.ui.profiles.WhoActivity;
+import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -195,12 +199,22 @@ public class NavigateTitleView extends TitleView implements OnDataChange, Accoun
         mSearchOrbView = findViewById(R.id.title_orb);
 
         mAccountView = findViewById(R.id.account_orb);
-        mAccountView.setOnOrbClickedListener(v -> AccountSelectionPresenter.instance(getContext()).nextAccountOrDialog());
-        mAccountView.setOnOrbLongClickedListener(v -> {
-            AccountSettingsPresenter.instance(getContext()).show();
-            return true;
-        });
-        TooltipCompatHandler.setTooltipText(mAccountView, getContext().getString(R.string.settings_accounts));
+        if (Profiles.enabled(getContext())) {
+            // uToob fork: the top-left button is Who's watching (people from Rocket Launcher), not Google accounts.
+            mAccountView.setOnOrbClickedListener(v -> openWho());
+            mAccountView.setOnOrbLongClickedListener(v -> {
+                openWho();
+                return true;
+            });
+            TooltipCompatHandler.setTooltipText(mAccountView, "Who's watching");
+        } else {
+            mAccountView.setOnOrbClickedListener(v -> AccountSelectionPresenter.instance(getContext()).nextAccountOrDialog());
+            mAccountView.setOnOrbLongClickedListener(v -> {
+                AccountSettingsPresenter.instance(getContext()).show();
+                return true;
+            });
+            TooltipCompatHandler.setTooltipText(mAccountView, getContext().getString(R.string.settings_accounts));
+        }
 
         mLanguageView = findViewById(R.id.language_orb);
         mLanguageView.setOnOrbClickedListener(v -> LanguageSettingsPresenter.instance(getContext()).show());
@@ -227,7 +241,7 @@ public class NavigateTitleView extends TitleView implements OnDataChange, Accoun
         MainUIData mainUIData = MainUIData.instance(getContext());
 
         mIsSearchOrbEnabled = !mainUIData.isTopButtonEnabled(MainUIData.TOP_BUTTON_SEARCH);
-        mIsAccountViewEnabled = mainUIData.isTopButtonEnabled(MainUIData.TOP_BUTTON_BROWSE_ACCOUNTS);
+        mIsAccountViewEnabled = Profiles.enabled(getContext()) || mainUIData.isTopButtonEnabled(MainUIData.TOP_BUTTON_BROWSE_ACCOUNTS);
         mIsLanguageViewEnabled = mainUIData.isTopButtonEnabled(MainUIData.TOP_BUTTON_CHANGE_LANGUAGE);
         mIsGlobalClockEnabled = GeneralData.instance(getContext()).isGlobalClockEnabled();
 
@@ -278,8 +292,42 @@ public class NavigateTitleView extends TitleView implements OnDataChange, Accoun
         }
     }
 
+    private void openWho() {
+        getContext().startActivity(new Intent(getContext(), WhoActivity.class));
+    }
+
+    /** uToob fork: the current person's picture and name on the top-left button. */
+    private void updatePersonIcon() {
+        // The view with GONE visibility has zero width and height
+        if (mAccountView.getWidth() <= 0 || mAccountView.getHeight() <= 0) {
+            Utils.postDelayed(this::updatePersonIcon, 500);
+            return;
+        }
+        if (mIconWidth == 0 || mIconHeight == 0) {
+            mIconWidth = mAccountView.getWidth();
+            mIconHeight = mAccountView.getHeight();
+        }
+        Profiles.Person p = Profiles.currentPerson(getContext());
+        Colors orbColors = mAccountView.getOrbColors();
+        if (p == null) {
+            mAccountView.setOrbColors(new Colors(orbColors.color, orbColors.brightColor, ContextCompat.getColor(getContext(), R.color.orb_icon_color)));
+            mAccountView.setOrbIcon(ContextCompat.getDrawable(getContext(), R.drawable.browse_title_account));
+            TooltipCompatHandler.setTooltipText(mAccountView, "Who's watching");
+            return;
+        }
+        int px = Math.max(1, Math.min(mIconWidth, mIconHeight));
+        mAccountView.setOrbColors(new Colors(orbColors.color, orbColors.brightColor, Color.TRANSPARENT));
+        mAccountView.setOrbIcon(new BitmapDrawable(getResources(), WhoActivity.avatarBitmap(p, px)));
+        TooltipCompatHandler.setTooltipText(mAccountView, p.name + " · Who's watching");
+    }
+
     private void updateAccountIcon() {
         if (!mIsAccountViewEnabled) {
+            return;
+        }
+
+        if (Profiles.enabled(getContext())) {
+            updatePersonIcon();
             return;
         }
 

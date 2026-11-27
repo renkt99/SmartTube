@@ -52,7 +52,8 @@ public class AppDataSourceManager {
         }
 
         settingItems.add(new SettingsItem(
-                context.getString(R.string.settings_accounts), () -> AccountSettingsPresenter.instance(context).show(), R.drawable.settings_account));
+                context.getPackageName().endsWith(".utube") ? "YouTube sign-in" : context.getString(R.string.settings_accounts),
+                () -> AccountSettingsPresenter.instance(context).show(), R.drawable.settings_account));
         settingItems.add(new SettingsItem(
                 context.getString(R.string.settings_remote_control), () -> RemoteControlSettingsPresenter.instance(context).show(), R.drawable.settings_cast));
         settingItems.add(new SettingsItem(
