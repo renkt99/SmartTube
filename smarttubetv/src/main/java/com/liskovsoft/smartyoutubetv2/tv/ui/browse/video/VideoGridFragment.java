@@ -54,7 +54,7 @@ public class VideoGridFragment extends GridFragment implements VideoSection {
         }
 
         mMainPresenter = getMainPresenter();
-        mCardPresenter = isShorts() ? new ShortsCardPresenter() : new VideoCardPresenter();
+        mCardPresenter = isShorts() ? new ShortsCardPresenter() : utoob() ? new com.liskovsoft.smartyoutubetv2.tv.presenter.UtoobGridCardPresenter() : new VideoCardPresenter();
         mBackgroundManager = ((LeanbackActivity) getActivity()).getBackgroundManager();
         mVideoGridScale = MainUIData.instance(getActivity()).getVideoGridScale();
 
@@ -88,9 +88,14 @@ public class VideoGridFragment extends GridFragment implements VideoSection {
         }
     }
 
+    /** uToob fork: video grids (not Shorts) use big Rocket-style cards, three across. */
+    private boolean utoob() {
+        return !isShorts() && getContext() != null && getContext().getPackageName().endsWith(".utube");
+    }
+
     private void setupAdapter() {
         VerticalGridPresenter presenter = new CustomVerticalGridPresenter();
-        presenter.setNumberOfColumns(
+        presenter.setNumberOfColumns(utoob() ? com.liskovsoft.smartyoutubetv2.tv.presenter.UtoobGridCardPresenter.COLUMNS : // uToob fork: 3 big cards
                 GridFragmentHelper.getMaxColsNum(getContext(), isShorts() ? R.dimen.shorts_card_width : R.dimen.card_width, mVideoGridScale)
         );
         presenter.enableChildRoundedCorners(getMainUIData().isUiTweakEnabled(MainUIData.UI_TWEAK_ROUNDED_CORNERS));

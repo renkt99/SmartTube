@@ -1525,6 +1525,10 @@ public class BrowseSupportFragment extends BaseSupportFragment {
         }
     };
 
+    /** uToob fork: called whenever the page shown changes (the sidebar marks it). */
+    protected void onCurrentRowChanged(int position) {
+    }
+
     /** uToob fork: open a row's page now (sidebar rows open on OK, not on highlight). */
     protected void selectRowNow(int position) {
         onRowSelected(position);
@@ -1548,6 +1552,7 @@ public class BrowseSupportFragment extends BaseSupportFragment {
         }
 
         mSelectedPosition = position;
+        onCurrentRowChanged(position);
         if (mHeadersSupportFragment == null || mMainFragmentAdapter == null) {
             // onDestroyView() called
             return;

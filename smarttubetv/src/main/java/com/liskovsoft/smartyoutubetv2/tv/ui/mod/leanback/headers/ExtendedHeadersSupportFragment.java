@@ -34,9 +34,59 @@ public class ExtendedHeadersSupportFragment extends HeadersSupportFragment {
         if (com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext()) && getVerticalGridView() != null) {
             androidx.leanback.widget.VerticalGridView grid = getVerticalGridView();
             float d = getResources().getDisplayMetrics().density;
-            grid.setPadding((int) (18 * d), (int) (54 * d), grid.getPaddingRight(), (int) (44 * d));
+            grid.setPadding((int) (18 * d), (int) (18 * d), grid.getPaddingRight(), (int) (14 * d));
             new com.liskovsoft.smartyoutubetv2.tv.ui.profiles.RailSpacing(grid);
+            // a highlighted row grows (rightwards, see below): let it draw over the padding instead of being cut off
+            grid.setClipToPadding(false);
+            grid.setClipChildren(false);
+            grid.post(() -> {
+                // only the sidebar's own containers, up to (not including) the frame that also holds the pages
+                for (android.view.ViewParent p = grid.getParent(); p instanceof android.view.ViewGroup; p = p.getParent()) {
+                    if (p instanceof androidx.leanback.widget.BrowseFrameLayout) break;
+                    ((android.view.ViewGroup) p).setClipChildren(false);
+                    ((android.view.ViewGroup) p).setClipToPadding(false);
+                }
+            });
+            grid.addOnChildAttachStateChangeListener(new androidx.recyclerview.widget.RecyclerView.OnChildAttachStateChangeListener() {
+                @Override
+                public void onChildViewAttachedToWindow(View child) {
+                    child.setPivotX(0); // the focus zoom scales this row wrapper: grow rightwards, not off the left edge
+                    colorRow(grid, child);
+                }
+
+                @Override
+                public void onChildViewDetachedFromWindow(View child) {
+                }
+            });
+            grid.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> recolorRows());
         }
+    }
+
+    /** uToob fork: the page that is open now has its name in red (the row may be highlighted or not). */
+    private static final int CURRENT_PAGE_COLOR = 0xFFFF4D5E;
+    private int mCurrentRow = -1;
+
+    public void setCurrentRow(int position) {
+        mCurrentRow = position;
+        recolorRows();
+    }
+
+    private void recolorRows() {
+        androidx.leanback.widget.VerticalGridView grid = getVerticalGridView();
+        if (grid == null || !com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext())) return;
+        for (int i = 0; i < grid.getChildCount(); i++) colorRow(grid, grid.getChildAt(i));
+    }
+
+    private void colorRow(androidx.leanback.widget.VerticalGridView grid, View row) {
+        android.widget.TextView label = row.findViewById(com.liskovsoft.smartyoutubetv2.tv.R.id.header_label);
+        if (label == null) return;
+        Object normal = label.getTag(com.liskovsoft.smartyoutubetv2.tv.R.id.header_label);
+        if (normal == null) {
+            normal = label.getCurrentTextColor();
+            label.setTag(com.liskovsoft.smartyoutubetv2.tv.R.id.header_label, normal);
+        }
+        boolean current = mCurrentRow >= 0 && grid.getChildAdapterPosition(row) == mCurrentRow;
+        label.setTextColor(current ? CURRENT_PAGE_COLOR : (Integer) normal);
     }
 
     @Override

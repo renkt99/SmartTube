@@ -124,6 +124,14 @@ public class BrowseFragment extends BrowseSupportFragment implements BrowseView 
         return !com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext());
     }
 
+    /** uToob fork: the sidebar shows the open page's name in red. */
+    @Override
+    protected void onCurrentRowChanged(int position) {
+        if (getHeadersSupportFragment() instanceof ExtendedHeadersSupportFragment) {
+            ((ExtendedHeadersSupportFragment) getHeadersSupportFragment()).setCurrentRow(position);
+        }
+    }
+
     @Override
     public HeadersSupportFragment onCreateHeadersSupportFragment() {
         return new ExtendedHeadersSupportFragment();

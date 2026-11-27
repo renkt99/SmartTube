@@ -17,3 +17,6 @@ Branch `tom` = upstream `master` + our changes. `master` mirrors upstream.
 - Rocket Launcher's "uToob subscriptions" Home row: on every screen pause uToob saves the person's subscribed channels and watch
   progress to files/utube_profiles/share/<person>.json (`UtoobShare`); `UtoobShareProvider` (`${applicationId}.share`, own
   `:share` process where MainApplication starts nothing, answers com.tomrenk.rocket only) hands them over. Rocket fetches the RSS itself.
+- Sidebar: rows sit closer to the top/bottom (padding 18/14dp), a highlighted row grows rightwards and isn't clipped, the open page's
+  name is red (`BrowseSupportFragment.onCurrentRowChanged` -> `ExtendedHeadersSupportFragment.setCurrentRow`).
+- Video grid pages use `UtoobGridCardPresenter`: 3 big cards across, one-line title, "Channel · date" under it (no views).
