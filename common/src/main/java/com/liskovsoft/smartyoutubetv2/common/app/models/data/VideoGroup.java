@@ -468,9 +468,17 @@ public class VideoGroup {
 
         VideoStateService stateService = VideoStateService.instance(null);
         // Keep remote completion when an older local playback position exists.
-        if (stateService != null && video.percentWatched == -1) {
+        // uToob: and keep local completion when YouTube reports less (feeds like Subscriptions get 0 or a stale
+        // partial value from the channel page, which used to hide uToob's own "watched" and un-grey the card).
+        if (stateService != null) {
             State state = stateService.getByVideoId(video.videoId);
-            video.sync(state);
+            if (state != null) {
+                float remote = video.percentWatched;
+                video.sync(state);
+                if (remote > video.percentWatched) {
+                    video.percentWatched = remote;
+                }
+            }
         }
 
         mVideos.add(idx, video);
