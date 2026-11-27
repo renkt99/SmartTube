@@ -117,6 +117,13 @@ public class BrowseFragment extends BrowseSupportFragment implements BrowseView 
         mCrashRestorer.restorePlayback();
     }
 
+    /** uToob fork: the person and Search rows are buttons; highlighting them keeps the current page. */
+    @Override
+    protected boolean isHeaderSelectable(androidx.leanback.widget.Row row) {
+        return row == null || row.getHeaderItem() == null
+                || !com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.isButton(row.getHeaderItem().getId());
+    }
+
     @Override
     public HeadersSupportFragment onCreateHeadersSupportFragment() {
         return new ExtendedHeadersSupportFragment();
@@ -126,6 +133,14 @@ public class BrowseFragment extends BrowseSupportFragment implements BrowseView 
         getHeadersSupportFragment().setOnHeaderClickedListener(
                 (viewHolder, row) -> {
                     long headerId = row.getHeaderItem().getId();
+                    if (headerId == com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.PERSON_ID) {
+                        startActivity(new android.content.Intent(getContext(), com.liskovsoft.smartyoutubetv2.tv.ui.profiles.WhoActivity.class));
+                        return;
+                    }
+                    if (headerId == com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.SEARCH_ID) {
+                        SearchPresenter.instance(getContext()).startSearch(null);
+                        return;
+                    }
                     int newPosition = indexOf(headerId);
 
                     if (getHeadersSupportFragment().getSelectedPosition() != newPosition) {

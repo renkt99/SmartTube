@@ -240,8 +240,10 @@ public class NavigateTitleView extends TitleView implements OnDataChange, Accoun
     private void updateButtonsVisibility() {
         MainUIData mainUIData = MainUIData.instance(getContext());
 
-        mIsSearchOrbEnabled = !mainUIData.isTopButtonEnabled(MainUIData.TOP_BUTTON_SEARCH);
-        mIsAccountViewEnabled = Profiles.enabled(getContext()) || mainUIData.isTopButtonEnabled(MainUIData.TOP_BUTTON_BROWSE_ACCOUNTS);
+        // uToob fork: the person and Search are the top rows of the sidebar (like Streamezy), so no orbs for them up here
+        boolean utoob = Profiles.enabled(getContext());
+        mIsSearchOrbEnabled = !utoob && !mainUIData.isTopButtonEnabled(MainUIData.TOP_BUTTON_SEARCH);
+        mIsAccountViewEnabled = !utoob && mainUIData.isTopButtonEnabled(MainUIData.TOP_BUTTON_BROWSE_ACCOUNTS);
         mIsLanguageViewEnabled = mainUIData.isTopButtonEnabled(MainUIData.TOP_BUTTON_CHANGE_LANGUAGE);
         mIsGlobalClockEnabled = GeneralData.instance(getContext()).isGlobalClockEnabled();
 

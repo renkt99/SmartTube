@@ -316,9 +316,25 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
             getView().addSection(index++, section);
         }
 
+        // uToob fork: sidebar like Streamezy's (person top, Search first of the middle, Settings last)
+        boolean utoob = com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext());
+        BrowseSection utoobSettings = null;
+        if (utoob) {
+            String name = com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.personName;
+            getView().addSection(index++, new BrowseSection(com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.PERSON_ID,
+                    name != null ? name : "Who's watching", BrowseSection.TYPE_GRID, R.drawable.settings_account,
+                    com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.personIconUrl, false, null));
+            getView().addSection(index++, new BrowseSection(com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.SEARCH_ID,
+                    "Search", BrowseSection.TYPE_GRID, R.drawable.settings_search));
+        }
+
         for (BrowseSection section : mSections) { // contains sections and pinned items!
             if (section.getId() == MediaGroup.TYPE_SETTINGS) {
                 section.setEnabled(true);
+                if (utoob) {
+                    utoobSettings = section;
+                    continue;
+                }
             }
 
             if (section.isEnabled()) {
@@ -329,6 +345,13 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
             } else {
                 getView().removeSection(section);
             }
+        }
+
+        if (utoobSettings != null) {
+            if (utoobSettings.getId() == bootSectionId) {
+                mBootSectionIndex = index;
+            }
+            getView().addSection(index++, utoobSettings);
         }
 
         // Refresh and restore last focus
@@ -492,6 +515,9 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
 
     @Override
     public void onSectionFocused(int sectionId) {
+        if (com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.isButton(sectionId)) {
+            return; // uToob fork: person / Search rows are buttons, not pages
+        }
         saveSelectedItems(); // save previous state
         mCurrentSection = findSectionById(sectionId);
         mCurrentVideo = null; // fast scroll through the sections (fix empty selected item)
@@ -501,6 +527,9 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
 
     @Override
     public void onSectionLongPressed(int sectionId) {
+        if (com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.isButton(sectionId)) {
+            return;
+        }
         SectionMenuPresenter.instance(getContext()).showMenu(findSectionById(sectionId));
     }
 
@@ -979,12 +1008,30 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
             }
         }
 
+        // uToob fork: person + Search rows first, Settings moved to the end (see refreshSections)
+        boolean utoob = com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext());
+        if (utoob) {
+            sectionIndex += 2;
+        }
+
+        BrowseSection settings = null;
         for (BrowseSection section : mSections) {
+            if (utoob && section.getId() == MediaGroup.TYPE_SETTINGS) {
+                settings = section;
+                continue;
+            }
             if (section.isEnabled()) {
                 sectionIndex++;
                 if (section.getId() == sectionId) {
                     return sectionIndex;
                 }
+            }
+        }
+
+        if (settings != null && settings.isEnabled()) {
+            sectionIndex++;
+            if (settings.getId() == sectionId) {
+                return sectionIndex;
             }
         }
 

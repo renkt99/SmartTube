@@ -164,6 +164,7 @@ public final class Profiles {
     /** Called from MainApplication (main process only). */
     public static void install(Application app) {
         if (!app.getPackageName().endsWith(".utube")) return;   // only our fork
+        publishPerson(app);
         app.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override
             public void onActivityStarted(Activity a) {
@@ -237,6 +238,24 @@ public final class Profiles {
         long away = s.optLong("lastAway");
         if (info.people.size() > 1 && away > 0 && now - away > ASK_AFTER_AWAY_MS) {
             a.startActivity(new Intent(a, WhoActivity.class));
+        }
+    }
+
+    /** The sidebar's top row (BrowsePresenter reads UtoobSidebar): the current person's name and round picture as a file. */
+    static void publishPerson(Context ctx) {
+        try {
+            Person p = currentPerson(ctx);
+            if (p == null) return;
+            File f = new File(ctx.getCacheDir(), "utoob-person-" + safe(p.id) + "-" + safe(p.avatar) + ".png");
+            if (!f.exists()) {
+                try (FileOutputStream out = new FileOutputStream(f)) {
+                    WhoActivity.avatarBitmap(p, 176).compress(android.graphics.Bitmap.CompressFormat.PNG, 100, out);
+                }
+            }
+            com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.personName = p.name;
+            com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.personIconUrl = Uri.fromFile(f).toString();
+        } catch (Throwable e) {
+            Log.d(TAG, "publishPerson: " + e);
         }
     }
 

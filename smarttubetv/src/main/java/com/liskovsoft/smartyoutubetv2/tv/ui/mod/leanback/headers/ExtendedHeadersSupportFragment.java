@@ -27,6 +27,24 @@ public class ExtendedHeadersSupportFragment extends HeadersSupportFragment {
         Helpers.setField(this, "mAdapterListener", mCustomAdapterListener);
     }
 
+    @Override
+    public void onViewCreated(android.view.View view, android.os.Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // uToob fork: sidebar spaced like Streamezy's (person top, middle centred, Settings bottom)
+        if (com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext()) && getVerticalGridView() != null) {
+            new com.liskovsoft.smartyoutubetv2.tv.ui.profiles.RailSpacing(getVerticalGridView());
+        }
+    }
+
+    @Override
+    public void setAlignment(int windowAlignOffsetTop) {
+        super.setAlignment(windowAlignOffsetTop);
+        // uToob fork: rows only scroll when the list is longer than the screen, so the spacing above stays put
+        if (com.liskovsoft.smartyoutubetv2.common.misc.UtoobSidebar.enabled(getContext()) && getVerticalGridView() != null) {
+            getVerticalGridView().setWindowAlignment(androidx.leanback.widget.VerticalGridView.WINDOW_ALIGN_BOTH_EDGE);
+        }
+    }
+
     public void setOnHeaderLongPressedListener(OnHeaderLongPressedListener listener) {
         mOnHeaderLongPressedListener = listener;
     }

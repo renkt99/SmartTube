@@ -1519,11 +1519,16 @@ public class BrowseSupportFragment extends BaseSupportFragment {
             if (DEBUG) Log.v(TAG, "header selected position " + position);
             // Layout of Headers Fragment in hidden state may triggers the onRowSelected and
             // reset to 0. Skip in that case.
-            if (mShowingHeaders) {
+            if (mShowingHeaders && isHeaderSelectable(row)) { // uToob fork: button rows don't switch the page
                 onRowSelected(position);
             }
         }
     };
+
+    /** uToob fork: return false for header rows that act as buttons (highlighting them keeps the current page). */
+    protected boolean isHeaderSelectable(Row row) {
+        return true;
+    }
 
     void onRowSelected(int position) {
         // even position is same, it could be data changed, always post selection runnable
