@@ -49,11 +49,11 @@ public class AppUpdatePresenter extends BasePresenter<Void> implements AppUpdate
     }
 
     public void start(boolean forceCheck) {
-        // uTube fork: updates come from our own GitHub Actions builds (adb install).
+        // uToob fork: updates come from our own GitHub Actions builds (adb install).
         // Upstream's updater would download and install upstream SmartTube instead.
         if ("org.smarttube.utube".equals(getContext().getPackageName())) {
             if (forceCheck) {
-                MessageHelpers.showMessage(getContext(), "uTube updates are installed from the fork's GitHub builds");
+                MessageHelpers.showMessage(getContext(), "uToob updates are installed from the fork's GitHub builds");
             }
             return;
         }

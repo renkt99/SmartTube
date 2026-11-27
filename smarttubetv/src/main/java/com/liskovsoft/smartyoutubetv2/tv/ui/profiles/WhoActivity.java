@@ -16,7 +16,7 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.Map;
 
-/** "Who's watching?": the people from Rocket Launcher, same pictures. OK picks, Back keeps whoever is using uTube now. */
+/** "Who's watching?": the people from Rocket Launcher, same pictures. OK picks, Back keeps whoever is using uToob now. */
 public class WhoActivity extends Activity {
     /** Same ids, emoji and colours as Streamezy and Rocket (Rocket Ui.kt Avatars). */
     private static final Map<String, Object[]> AVATARS = new HashMap<>();
@@ -117,7 +117,7 @@ public class WhoActivity extends Activity {
         LinearLayout.LayoutParams np = new LinearLayout.LayoutParams(-2, -2);
         np.topMargin = dp(12);
         card.addView(name, np);
-        TextView sub = text(isCurrent ? "Using uTube now" : " ", 13, 0xFF9A9A9A, false);
+        TextView sub = text(isCurrent ? "Using uToob now" : " ", 13, 0xFF9A9A9A, false);
         card.addView(sub, new LinearLayout.LayoutParams(-2, -2));
 
         card.setOnFocusChangeListener((v, has) -> {

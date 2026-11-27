@@ -10,8 +10,8 @@ import android.os.SystemClock;
 import java.io.File;
 
 /**
- * Runs in its own short-lived process (":switch", see the manifest). Makes sure the main uTube process is gone, swaps
- * the preference files over to the chosen person ({@link Profiles#swap}) and starts uTube again. Same idea as
+ * Runs in its own short-lived process (":switch", see the manifest). Makes sure the main uToob process is gone, swaps
+ * the preference files over to the chosen person ({@link Profiles#swap}) and starts uToob again. Same idea as
  * ProcessPhoenix: no SmartTube code is running while the files move, so nothing can write the old person's settings back.
  */
 public class SwitchActivity extends Activity {

@@ -58,7 +58,7 @@ public class MainApplication extends MultiDexApplication implements Configuratio
     public void onCreate() {
         super.onCreate();
 
-        // uTube fork: the short-lived process that swaps people's settings must not start any SmartTube machinery.
+        // uToob fork: the short-lived process that swaps people's settings must not start any SmartTube machinery.
         if (com.liskovsoft.smartyoutubetv2.tv.ui.profiles.Profiles.isSwitchProcess()) {
             return;
         }

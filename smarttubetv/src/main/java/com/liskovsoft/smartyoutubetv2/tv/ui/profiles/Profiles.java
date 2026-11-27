@@ -21,15 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * uTube people (fork addition). Each person has their own copy of everything SmartTube stores in its preference files
+ * uToob people (fork addition). Each person has their own copy of everything SmartTube stores in its preference files
  * (settings, layout, sidebar, player options, history, YouTube sign-in and so subscriptions).
  *
  * <p>The people themselves come from Rocket Launcher (content://com.tomrenk.rocket.people), so they are the same people,
- * names and pictures as on Home. When Home just opened uTube, uTube follows the person picked there. Otherwise uTube keeps
+ * names and pictures as on Home. When Home just opened uToob, uToob follows the person picked there. Otherwise uToob keeps
  * whoever used it last, unless it has been away for 2 hours, then it asks "Who's watching?".
  *
  * <p>Switching moves the live preference files into files/utube_profiles/&lt;old id&gt;/ and the new person's into place,
- * while no uTube process is running (see {@link SwitchActivity}, which runs in its own process), then starts uTube again.
+ * while no uToob process is running (see {@link SwitchActivity}, which runs in its own process), then starts uToob again.
  * The registry lives in files/utube_profiles/state.json, which SmartTube's own Backup/Restore never touches.
  */
 public final class Profiles {
@@ -146,7 +146,7 @@ public final class Profiles {
         return state(ctx).optString("current");
     }
 
-    // ------------------------------------------------------------------ when uTube comes to the front
+    // ------------------------------------------------------------------ when uToob comes to the front
 
     /** Called from MainApplication (main process only). */
     public static void install(Application app) {
@@ -200,7 +200,7 @@ public final class Profiles {
         long now = System.currentTimeMillis();
 
         if (cur.isEmpty()) {
-            // First run with people: what uTube has now becomes Tom's (the user's choice), else Home's current person.
+            // First run with people: what uToob has now becomes Tom's (the user's choice), else Home's current person.
             Person owner = null;
             for (Person p : info.people) if (p.name.trim().equalsIgnoreCase("tom")) owner = p;
             if (owner == null) owner = info.find(info.current);
@@ -226,7 +226,7 @@ public final class Profiles {
         }
     }
 
-    /** Remember who to load, then hand over to SwitchActivity (own process), which swaps the files and starts uTube again. */
+    /** Remember who to load, then hand over to SwitchActivity (own process), which swaps the files and starts uToob again. */
     public static void switchTo(Activity a, String id) {
         put(a, "pending", safe(id));
         Intent i = new Intent(a, SwitchActivity.class)

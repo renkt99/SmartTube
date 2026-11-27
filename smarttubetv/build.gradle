@@ -31,7 +31,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 // The first letter of the flavor name must be in uppercase
-// uTube fork: no Firebase/Crashlytics for ststable (uTube), upstream's google-services.json has no client for our package
+// uToob fork: no Firebase/Crashlytics for ststable (uToob), upstream's google-services.json has no client for our package
 if (new File("${projectDir}/google-services.json").exists() && getGradle().getStartParameter().getTaskRequests().toString().contains("Stbeta")) {
     // Google Services Gradle plugin (transforms google-services.json file)
     apply plugin: 'com.google.gms.google-services'
@@ -242,7 +242,7 @@ dependencies {
         transitive = true
     }
 
-    // uTube fork: ststable (uTube) ships without Crashlytics
+    // uToob fork: ststable (uToob) ships without Crashlytics
 
     // debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
 
