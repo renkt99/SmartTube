@@ -175,7 +175,8 @@ public final class Profiles {
                 // SplashActivity is singleInstance (its own task): wait for a normal screen so the picker opens on top of it.
                 if (!sNeedCheck || a instanceof WhoActivity || a.getClass().getSimpleName().startsWith("Splash")) return;
                 sNeedCheck = false;
-                onForeground(a);
+                onForeground(a);   // may restart uToob for another person (then nothing below runs)
+                com.liskovsoft.smartyoutubetv2.common.misc.UtoobSubscriptions.importPinnedOnce(a);
             }
 
             @Override
