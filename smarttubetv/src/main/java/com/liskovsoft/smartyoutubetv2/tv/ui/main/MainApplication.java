@@ -58,6 +58,12 @@ public class MainApplication extends MultiDexApplication implements Configuratio
     public void onCreate() {
         super.onCreate();
 
+        // uTube fork: the short-lived process that swaps people's settings must not start any SmartTube machinery.
+        if (com.liskovsoft.smartyoutubetv2.tv.ui.profiles.Profiles.isSwitchProcess()) {
+            return;
+        }
+        com.liskovsoft.smartyoutubetv2.tv.ui.profiles.Profiles.install(this);
+
         // ByeByeDPI fix
         // https://android-review.googlesource.com/c/platform/external/conscrypt/+/89408/
         // NOTE: Android 10+ (API 29+) uses system Conscrypt TLS; custom Security providers are unnecessary

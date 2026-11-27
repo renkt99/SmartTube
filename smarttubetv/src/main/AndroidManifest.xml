@@ -44,6 +44,11 @@
         android:name="android.software.leanback"
         android:required="true" />
 
+    <!-- uTube fork: read who's watching from Rocket Launcher (the TV's home screen) -->
+    <queries>
+        <provider android:authorities="com.tomrenk.rocket.people" />
+    </queries>
+
     <!-- android:usesCleartextTraffic - allow HTTP traffic -->
     <!-- Alt cleartext options: https://stackoverflow.com/questions/45940861/android-8-cleartext-http-traffic-not-permitted -->
     <application
@@ -79,6 +84,19 @@
 
         <!-- This activity's name used inside atv channels -->
         <!-- More info: com.liskovsoft.leanbackassistant.utils.AppUtil -->
+        <!-- uTube fork: people (see tv/ui/profiles/Profiles.java) -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.ui.profiles.WhoActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" />
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.ui.profiles.SwitchActivity"
+            android:exported="false"
+            android:process=":switch"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay" />
+
         <activity
             android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity"
             android:exported="true"

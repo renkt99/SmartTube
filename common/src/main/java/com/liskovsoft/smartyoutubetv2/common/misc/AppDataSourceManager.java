@@ -41,6 +41,16 @@ public class AppDataSourceManager {
     public List<SettingsItem> getSettingItems(Context context) {
         List<SettingsItem> settingItems = new ArrayList<>();
 
+        // uTube fork: switch person (WhoActivity lives in the tv module, so start it by name)
+        if (context.getPackageName().endsWith(".utube")) {
+            settingItems.add(new SettingsItem("Who's watching", () -> {
+                android.content.Intent who = new android.content.Intent()
+                        .setClassName(context, "com.liskovsoft.smartyoutubetv2.tv.ui.profiles.WhoActivity");
+                if (!(context instanceof android.app.Activity)) who.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(who);
+            }, R.drawable.settings_account));
+        }
+
         settingItems.add(new SettingsItem(
                 context.getString(R.string.settings_accounts), () -> AccountSettingsPresenter.instance(context).show(), R.drawable.settings_account));
         settingItems.add(new SettingsItem(
