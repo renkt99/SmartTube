@@ -57,6 +57,11 @@ public class UtoobGridCardPresenter extends VideoCardPresenter {
     }
 
     @Override
+    protected boolean useRingFocus() {
+        return true;
+    }
+
+    @Override
     protected boolean isCardMultilineTitleEnabled(Context context) {
         return false;
     }

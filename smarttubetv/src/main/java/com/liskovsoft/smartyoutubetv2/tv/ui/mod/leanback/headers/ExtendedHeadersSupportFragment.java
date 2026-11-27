@@ -63,9 +63,12 @@ public class ExtendedHeadersSupportFragment extends HeadersSupportFragment {
         }
     }
 
-    /** uToob fork: closed sidebar = icon rail. Left padding 18dp + 32dp icon + 16dp. */
+    /**
+     * uToob fork: closed sidebar = icon rail. The icon starts ~21.5dp in (18dp padding + the row's own inset) and is 32dp wide,
+     * so 76dp leaves the same gap on both sides (measured on the TV 2026-11-27: icons at 38-96px in a 116px strip).
+     */
     public static int railWidthPx(android.content.Context ctx) {
-        return (int) (66 * ctx.getResources().getDisplayMetrics().density);
+        return (int) (76 * ctx.getResources().getDisplayMetrics().density);
     }
 
     private boolean mCollapsed;

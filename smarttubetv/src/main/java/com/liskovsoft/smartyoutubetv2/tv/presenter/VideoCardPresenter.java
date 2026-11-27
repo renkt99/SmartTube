@@ -90,13 +90,41 @@ public class VideoCardPresenter extends LongClickPresenter {
         //if (VERSION.SDK_INT >= 23 && MainUIData.instance(context).isUiTweakEnabled(MainUIData.UI_TWEAK_ROUNDED_CORNERS)) {
         //    cardView.setForeground(ContextCompat.getDrawable(context, R.drawable.lb_card_outline));
         //}
+        if (useRingFocus()) {
+            cardView.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+        }
         updateCardBackgroundColor(cardView, false);
         return new ViewHolder(cardView);
+    }
+
+    /**
+     * uToob fork: focus like Rocket Launcher's Home: a white ring round the thumbnail only, no panel behind the text (which
+     * just turns from grey to white). See UtoobGridCardPresenter.
+     */
+    protected boolean useRingFocus() {
+        return false;
+    }
+
+    private static android.graphics.drawable.Drawable ringDrawable(Context context) {
+        float d = context.getResources().getDisplayMetrics().density;
+        android.graphics.drawable.GradientDrawable ring = new android.graphics.drawable.GradientDrawable();
+        ring.setColor(android.graphics.Color.TRANSPARENT);
+        ring.setStroke((int) (3 * d + 0.5f), android.graphics.Color.WHITE);
+        ring.setCornerRadius(8 * d);
+        return ring;
     }
 
     private void updateCardBackgroundColor(ComplexImageCardView view, boolean selected) {
         int backgroundColor = selected ? mSelectedBackgroundColor : mDefaultBackgroundColor;
         int textColor = selected ? mSelectedTextColor : mDefaultTextColor;
+        if (useRingFocus()) {
+            backgroundColor = android.graphics.Color.TRANSPARENT;
+            textColor = selected ? android.graphics.Color.WHITE : 0xFFA0A0A0;
+            View image = view.findViewById(R.id.main_image_wrapper);
+            if (image != null && android.os.Build.VERSION.SDK_INT >= 23) {
+                image.setForeground(selected ? ringDrawable(view.getContext()) : null);
+            }
+        }
 
         // Both background colors should be set because the view's
         // background is temporarily visible during animations.
@@ -187,13 +215,47 @@ public class VideoCardPresenter extends LongClickPresenter {
             ColorMatrix matrix = new ColorMatrix();
             matrix.setSaturation(0);
             ColorMatrix dim = new ColorMatrix();
-            dim.setScale(0.5f, 0.5f, 0.5f, 1f);
+            dim.setScale(0.35f, 0.35f, 0.35f, 1f);   // darker than before (0.5), so "Watched" reads on top
             matrix.postConcat(dim);
             sWatchedFilter = new ColorMatrixColorFilter(matrix);
         }
 
         if (cardView.getMainImageView() != null) {
             cardView.getMainImageView().setColorFilter(watched ? sWatchedFilter : null);
+        }
+
+        // a small "Watched" label in the middle of the thumbnail, and no progress bar (it would only say 100%)
+        View wrapper = cardView.findViewById(R.id.main_image_wrapper);
+        if (wrapper instanceof android.widget.RelativeLayout) {
+            android.widget.RelativeLayout box = (android.widget.RelativeLayout) wrapper;
+            View label = box.findViewWithTag("utoob-watched");
+            if (label == null && watched) {
+                Context ctx = cardView.getContext();
+                float d = ctx.getResources().getDisplayMetrics().density;
+                android.widget.TextView t = new android.widget.TextView(ctx);
+                t.setTag("utoob-watched");
+                t.setText("Watched");
+                t.setTextColor(android.graphics.Color.WHITE);
+                t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 15);
+                t.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+                t.setLetterSpacing(0.04f);
+                t.setPadding((int) (12 * d), (int) (4 * d), (int) (12 * d), (int) (5 * d));
+                android.graphics.drawable.GradientDrawable pill = new android.graphics.drawable.GradientDrawable();
+                pill.setColor(0x99000000);
+                pill.setCornerRadius(20 * d);
+                t.setBackground(pill);
+                android.widget.RelativeLayout.LayoutParams lp = new android.widget.RelativeLayout.LayoutParams(
+                        android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+                lp.addRule(android.widget.RelativeLayout.CENTER_IN_PARENT);
+                box.addView(t, lp);
+                label = t;
+            }
+            if (label != null) {
+                label.setVisibility(watched ? View.VISIBLE : View.GONE);
+            }
+        }
+        if (watched) {
+            cardView.setProgress(0);
         }
 
         float textAlpha = watched ? 0.5f : 1f;

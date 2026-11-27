@@ -23,3 +23,5 @@ Branch `tom` = upstream `master` + our changes. `master` mirrors upstream.
 - Closed sidebar = 66dp icon rail (labels hidden): leanback `BrowseSupportFragment.getCollapsedHeadersWidth/onHeadersShown`,
   `HeadersSupportFragment.setRowsVisibleWhenDisabled`. Open page's name + icon use the theme's progress-bar red (logo red #E62117 fallback).
 - Video grids: 32dp gaps, focus zoom 106% (XSMALL), cards sized for the rail.
+- Grid cards focus like Rocket: white ring round the thumbnail only, no text panel (`VideoCardPresenter.useRingFocus`). Watched cards
+  (all pages): darker (0.35), a "Watched" pill in the middle, no progress bar. Icon rail 76dp (centred, measured on the TV).
