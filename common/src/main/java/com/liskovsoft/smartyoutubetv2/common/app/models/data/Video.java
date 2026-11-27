@@ -948,6 +948,10 @@ public final class Video {
             long realDurationMs = state.durationMs != -1 ? state.durationMs : getDurationMs();
             if (realDurationMs > 0) {
                 percentWatched = state.positionMs / (realDurationMs / 100f);
+            } else if (state.video != null && state.video.percentWatched >= 0) {
+                // uToob: feed cards (Subscriptions/RSS) have no duration, so "Mark as watched" saved only the percent
+                // (position 0, duration unknown). Without this it was lost on the next start and the card un-greyed.
+                percentWatched = state.video.percentWatched;
             }
         }
     }
